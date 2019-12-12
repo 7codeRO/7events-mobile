@@ -1,0 +1,16 @@
+[{
+  "id": 1,
+  "title": "Event 1",
+  "user": {"name": "Victor"},
+  "date": "2019-05-05 09:00",
+  "location": "Cluj-Napoca",
+  "private": false,
+  "categories": ["it", "javascript", "react"],
+  "description": "Description of the project",
+  "comments": [{
+    "name": "Victor",
+    "text": "Salut, sunt interesat de acest",
+  }],
+  "nrGoing": 1,
+  "nrInterested": 2
+}]
