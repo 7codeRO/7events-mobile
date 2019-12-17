@@ -1,1 +1,0 @@
-../../../FirebaseFirestore/Firestore/core/src/firebase/firestore/api/query_core.h

@@ -17,13 +17,18 @@ import {
     createSwitchNavigator,
     createAppContainer
 } from 'react-navigation';
-import WelcomeScreen from "../screens/WelcomeScreen";
+import Login from "../screens/Auth/Login";
 import AppDrawerNavigator from "./AppDrawerNavigator";
+import Register from "../screens/Auth/Register";
+import Loading from "../screens/Loading";
 
 const AppSwitchNavigator = createSwitchNavigator({
-    Welcome: { screen: WelcomeScreen },
-    Dashboard: { screen: AppDrawerNavigator }
+    // Loading: {screen: Loading},
+    Dashboard: { screen: AppDrawerNavigator },
+    Login: { screen: Login },
+    Register: { screen: Register },
 });
+
 
 const AppContainer = createAppContainer(AppSwitchNavigator);
 
