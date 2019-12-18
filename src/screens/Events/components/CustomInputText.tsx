@@ -4,8 +4,8 @@ import {StyleSheet} from "react-native";
 import {Icon} from "native-base";
 
 type Props = {
-    error: string;
-    touched: boolean;
+    error: any;
+    touched: any;
 } & InputProps;
 
 const CustomInputText = (props: Props) => {
@@ -35,7 +35,7 @@ const CustomInputText = (props: Props) => {
             labelStyle={touched && error && {color: 'red'}}
             rightIcon={touched ? getInputIcon(!!error) : null}
             errorStyle={{ color: 'red' }}
-            errorMessage={error}
+            errorMessage={touched && error}
             {...restProps}
         />
     )

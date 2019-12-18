@@ -1,19 +1,35 @@
-import React from "react";
-import {View, Text, StyleSheet} from "react-native";
-import {Container, Content, DatePicker, Form, Header, Icon, Item, Label, Row} from "native-base";
+import React, {useState} from "react";
+import {Container, Content} from "native-base";
 import {Formik} from "formik";
 import * as Yup from 'yup';
-import {Input} from "react-native-elements";
 import CustomInputText from "./components/CustomInputText";
+import {Button} from "react-native-elements";
+import DatePicker from "../../components/DatePicker";
+import SingleImageUpload from "../../components/SingleImageUpload";
 
 const AddEventSchema = Yup.object().shape({
     title: Yup.string()
         .required('Insert title'),
     description: Yup.string()
-        .required('Insert title'),
+        .required('Insert description'),
+    date: Yup.string()
+        .required('Insert description'),
+    location: Yup.string()
+        .required('Insert location'),
+    image: Yup.string()
+        .required('Select image'),
 });
 
 const AddEvent = () => {
+    const [loading, isLoading] = useState(false);
+
+    const onFormSubmit = (values) => {
+        isLoading(true);
+        console.log(values);
+        setTimeout(() => {
+            isLoading(false);
+        }, 3000);
+    };
 
     return (
         <Container>
@@ -22,18 +38,18 @@ const AddEvent = () => {
                     initialValues={{
                         title: '',
                         description: '',
-                        date: '',
+                        date: null,
+                        image: null,
+                        location: ''
                     }}
                     enableReinitialize
-                    onSubmit={() => console.log('asd')}
                     validationSchema={AddEventSchema}
-                    // onSubmit={onSubmit}
+                    onSubmit={onFormSubmit}
                 >
-                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                    {({ handleChange, handleBlur, setFieldValue, handleSubmit, values, errors, touched }) => (
                         <>
 
                             <CustomInputText
-                                containerStyle={style.input}
                                 error={errors.title}
                                 touched={touched.title}
                                 placeholder=''
@@ -41,40 +57,39 @@ const AddEvent = () => {
                                 onChangeText={handleChange('title')}
                                 onBlur={handleBlur('title')}
                             />
-                            {/*<Item*/}
-                            {/*    error={!!errors.title && touched.title}*/}
-                            {/*    success={!errors.title && touched.title}*/}
-                            {/*    stackedLabel*/}
-                            {/*    style={style.input}*/}
-                            {/*>*/}
-                            {/*    <Label>Title</Label>*/}
-                            {/*    <Input*/}
-                            {/*        value={values.title}*/}
-                            {/*        onChangeText={handleChange('title')}*/}
-                            {/*        onBlur={handleBlur('title')}*/}
-                            {/*    />*/}
-                            {/*    {touched.title && getInputIcon(!!errors.title)}*/}
-                            {/*</Item>*/}
-                            {/*{touched.title && errors.title && <Text style={style.error}>{errors.title}</Text>}*/}
-                            {/*<Item*/}
-                            {/*    error={!!errors.description && touched.description}*/}
-                            {/*    success={!errors.description && touched.description}*/}
-                            {/*    stackedLabel*/}
-                            {/*    style={style.input}*/}
-                            {/*>*/}
-                            {/*    <Label>Description</Label>*/}
-                            {/*    <Input*/}
-                            {/*        value={values.description}*/}
-                            {/*        onChangeText={handleChange('description')}*/}
-                            {/*        onBlur={handleBlur('description')}*/}
-                            {/*    />*/}
-                            {/*    {touched.description && getInputIcon(!!errors.description)}*/}
-                            {/*</Item>*/}
-                            {/*{touched.description && errors.description && <Text style={style.error}>{errors.description}</Text>}*/}
-
-
-
-
+                            <CustomInputText
+                                error={errors.description}
+                                touched={touched.description}
+                                placeholder=''
+                                label={'Description'}
+                                onChangeText={handleChange('description')}
+                                onBlur={handleBlur('description')}
+                            />
+                            <CustomInputText
+                                error={errors.location}
+                                touched={touched.location}
+                                placeholder=''
+                                label={'Location'}
+                                onChangeText={handleChange('location')}
+                                onBlur={handleBlur('location')}
+                            />
+                            <DatePicker
+                                onSelect={(date) => setFieldValue('date', date)}
+                                error={errors.date}
+                                value={values.date}
+                            />
+                            <SingleImageUpload
+                                value={values.image}
+                                error={errors.image}
+                                touched={touched.image}
+                                onFileSelect={(image: object) => setFieldValue('image', image)}
+                            />
+                            <Button
+                                title={"Submit"}
+                                onPress={() => handleSubmit()}
+                                style={{marginHorizontal: 10, marginVertical: 20}}
+                                loading={loading}
+                            />
                         </>
                     )}
                 </Formik>
@@ -82,25 +97,5 @@ const AddEvent = () => {
         </Container>
     )
 };
-
-const style = StyleSheet.create({
-    input: {
-        marginTop: 15,
-        display: 'flex',
-    },
-    inputError: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'red',
-    },
-    inputSuccess: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'green',
-    },
-    error:{
-        color: 'red',
-        marginLeft: 15,
-        marginTop: 5
-    }
-});
 
 export default AddEvent;
