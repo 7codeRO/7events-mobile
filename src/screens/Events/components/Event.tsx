@@ -1,13 +1,34 @@
 import {Body, Button, Card, CardItem, Col, Grid, Icon, Left, Right, Text, Thumbnail} from "native-base";
 import {Image, StyleSheet, View} from "react-native";
 import React from "react";
+import Firebase from "../../../Firebase";
+import _ from "lodash";
+import Comments from "./Comments";
 
-const Event = ({event, navigation}: any) => {
+const Event = ({event, id, navigation, showComments}: any) => {
+    const authEmail = Firebase.auth().currentUser.email;
+
+    const onPressAction = (key) => {
+        let data = event[key] ? event[key] : [];
+
+        if (_.includes(event[key], authEmail)) {
+            data = _.remove(data, authEmail);
+        }else {
+            data = [...data, authEmail];
+        }
+
+        Firebase.database().ref(`/events/${id}`).update({
+            [key]: data
+        }, (error) => {});
+    };
+
+    const getActionStyle = (key) => (_.includes(event[key], authEmail)) ? style.selectedBlueColor : style.blueColor;
+
     return (
         <Card>
             <CardItem>
                 <Left>
-                    <Thumbnail source={require('../../../../assets/user-icon.png')}/>
+                    <Thumbnail source={{uri: `https://api.adorable.io/avatars/285/${event.user}.png`}}/>
                     <Body>
                         <Text>{event.title}</Text>
                         <View style={{display: 'flex', justifyContent: 'space-between', flexDirection: 'row'}}>
@@ -20,10 +41,13 @@ const Event = ({event, navigation}: any) => {
                 </Left>
             </CardItem>
             <CardItem cardBody button onPress={() => {
-                navigation.navigate('SingleEvent', {id: event.id})
+                navigation ? navigation.navigate('SingleEvent', {id}) : null;
             }}>
                 <View style={style.cardBody}>
-                    <Image source={require('../../../../assets/cosmos.jpeg')} style={style.background}/>
+                    <View style={{display: 'flex', height: 200, overflow: 'hidden'}}>
+                        {event.isPrivate && <Text style={style.private}>Private</Text>}
+                        <Image source={{uri: event.imageUrl}} style={style.background}/>
+                    </View>
                     <View style={style.cardDescriptionWrapper}>
                         <View style={style.cardDescription}>
                             <Text>{event.description}</Text>
@@ -34,23 +58,24 @@ const Event = ({event, navigation}: any) => {
             <CardItem style={style.footer}>
                 <Grid>
                     <Col style={style.column}>
-                        <Icon name="thumbs-up" style={style.blueColor}/>
-                        <Text style={style.blueColor}>12</Text>
+                        <Icon name="thumbs-up" style={getActionStyle('likes')} onPress={() => onPressAction('likes')}/>
+                        <Text style={getActionStyle('likes')}>{event.likes ? event.likes.length : 0}</Text>
                     </Col>
                     <Col style={style.column}>
-                        <Icon name="chatbubbles"  style={style.blueColor}/>
-                        <Text style={style.blueColor}>{event.comments.length}</Text>
+                        <Icon name="chatbubbles" style={style.blueColor}/>
+                        <Text style={style.blueColor}>{event.comments ? event.comments.length : 0}</Text>
                     </Col>
                     <Col style={style.column}>
-                        <Icon name="md-checkmark" style={style.blueColor} />
-                        <Text style={style.blueColor}>{event.nrGoing}</Text>
+                        <Icon name="md-checkmark" style={getActionStyle('goings')} onPress={() => onPressAction('goings')}/>
+                        <Text style={getActionStyle('goings')}>{event.goings ? event.goings.length : 0}</Text>
                     </Col>
                     <Col style={style.column}>
-                        <Icon name="md-star" style={style.blueColor} />
-                        <Text style={style.blueColor}>{event.nrInterested}</Text>
+                        <Icon name="md-star" style={getActionStyle('interestings')} onPress={() => onPressAction('interestings')}/>
+                        <Text style={getActionStyle('interestings')}>{event.interestings ? event.interestings.length : 0}</Text>
                     </Col>
                 </Grid>
             </CardItem>
+            {showComments && <Comments event={event} id={id} />}
         </Card>
     )
 };
@@ -59,7 +84,7 @@ const Event = ({event, navigation}: any) => {
 const style = StyleSheet.create({
     background: {
         height: 200,
-        width: null,
+        width: '100%',
         flex: 1
     },
     cardBody: {
@@ -85,7 +110,24 @@ const style = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    blueColor: {color: '#2196F3'}
+    blueColor: {color: '#1eb9f3'},
+    selectedBlueColor: {color: '#114ff3'},
+    private: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        position: 'absolute',
+        right: -30,
+        top: 25,
+        fontSize: 12,
+        backgroundColor: 'red',
+        zIndex: 9999,
+        color: '#fff',
+        padding: 5,
+        width: 150,
+        transform: [{ rotate: '45deg'}]
+    }
 });
 
 export default Event;

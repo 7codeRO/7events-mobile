@@ -11,6 +11,7 @@ type Props = {
 } & Omit<DateTimePickerProps, 'onConfirm' | 'onCancel'>
 
 const DatePicker = (props: Props) => {
+    const [touched, isTouched] = useState(false);
     const [visibleDate, isVisibleDate] = useState(false);
 
     const onConfirmDate = (date) => {
@@ -19,17 +20,21 @@ const DatePicker = (props: Props) => {
     };
 
     const onCancelDate = () => {
-        console.log('ON CANCEL');
         isVisibleDate(false);
     };
 
+    const openPicker = () => {
+        isVisibleDate(true);
+        isTouched(true);
+    }
+
     const {value, error, ...restProps} = props;
     return (
-        <TouchableHighlight onPress={() => isVisibleDate(true)} underlayColor="white">
+        <TouchableHighlight onPress={openPicker} underlayColor="white">
             <Row style={style.row}>
-                <Col style={{width: 100}}><Text style={[style.text, (error) ? style.textError: null]}>Date</Text></Col>
+                <Col style={{width: 100}}><Text style={[style.text, (error && touched) ? style.textError: null]}>Date</Text></Col>
                 <Col>
-                    <Text style={[style.text, (error) ? style.textError: null]}>{value ? value.toLocaleString() : 'Click to select date'}</Text>
+                    <Text style={[style.text, (error && touched) ? style.textError: null]}>{value ? value.toLocaleString() : 'Click to select date'}</Text>
                     <DateTimePicker
                         onConfirm={onConfirmDate}
                         onCancel={onCancelDate}

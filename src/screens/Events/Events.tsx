@@ -1,37 +1,38 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Event from './components/Event';
-import events from './components/events.json';
-import {View} from "react-native";
+import {View, Text, SafeAreaView, ScrollView} from "react-native";
 import Firebase from "../../Firebase";
+import LoadingComponent from "../../components/LoadingComponent";
+import _ from "lodash";
 
 const Events = (props: any) => {
-    // const database = Firebase.database();
-    // Firebase.database().ref('/').once('value').then(function(snapshot) {
-    //     console.log(snapshot.val())
-    // });
-    //
-    // Firebase.database().ref('/events').push({
-    //     title: 'Event with Comment',
-    //     description: 'Description event',
-    //     location: 'Cluj-Napoca',
-    //     nrGoing: 0,
-    //     nrInterested: 0,
-    //     private: false,
-    //     comments: [{
-    //         name: 'Victor Malai',
-    //         text: 'EASDSAD'
-    //     }],
-    // });
+    const [events, setEvents] = useState(null);
+    const [loading, isLoading] = useState(true);
+
+    useEffect(() => {
+        Firebase.database().ref('/events').on('value', (snapshot) => {
+            isLoading(false);
+            setEvents(snapshot.val());
+        });
+    }, []);
+
+    if (loading) return <LoadingComponent />;
+
     return (
-        <View>
-                {events.map((event, index) =>
-                    <Event
-                        event={event}
-                        navigation={props.navigation}
-                        key={index}
-                    />
-                )}
-        </View>
+        <SafeAreaView>
+            <ScrollView>
+                <View>
+                    {events ? Object.keys(events).map(key =>
+                        <Event
+                            key={key}
+                            id={key}
+                            event={events[key]}
+                            navigation={props.navigation}
+                        />
+                    ) : <Text >No events</Text>}
+            </View>
+            </ScrollView>
+        </SafeAreaView>
     )
 };
 

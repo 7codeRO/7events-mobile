@@ -26,7 +26,7 @@ const Login = (props: any) => {
         const {email, password} = values;
         Firebase.auth().signInWithEmailAndPassword(email, password)
             .then((result) => {
-                props.navigation.navigate('Register')
+                props.navigation.navigate('Events')
             })
             .catch(function(error) {
                 isLoading(false);

@@ -57,7 +57,8 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ccc",
         justifyContent: 'center',
-        borderRadius: 3
+        borderRadius: 3,
+        height: 200,
     },
     imageError: {
         borderColor: 'red',

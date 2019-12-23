@@ -1,15 +1,28 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Container, Content} from "native-base";
-import events from './components/events.json';
 import Event from './components/Event';
+import Firebase from "../../Firebase";
+import LoadingComponent from "../../components/LoadingComponent";
 
 const SingleEvent = (props: any) => {
-    // const id = props.navigation.state.params;
-    console.log('props.navigation', props.navigation);
+    const [event, setEvent] = useState(null);
+    const [loading, isLoading] = useState(true);
+    const {id} = props.navigation.state.params;
+    useEffect(() => {
+        Firebase.database().ref(`/events/${id}`).on('value', (snapshot) => {
+            setEvent(snapshot.val());
+            isLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return <LoadingComponent />;
+    }
+
     return (
         <Container>
             <Content>
-                <Event event={events[0]}/>
+                <Event event={event} id={id} showComments/>
             </Content>
         </Container>
     );

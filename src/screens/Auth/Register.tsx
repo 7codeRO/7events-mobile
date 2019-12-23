@@ -7,6 +7,7 @@ import {Button, Input} from 'react-native-elements';
 import {Toast} from "native-base";
 import Container from "./components/Container";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import uuid from "../../helpers/uuid";
 
 const SignupSchema = Yup.object().shape({
     email: Yup.string()
@@ -26,7 +27,11 @@ const Register = (props: any) => {
         Firebase.auth()
             .createUserWithEmailAndPassword(values.email, values.password)
             .then(() => {
-                props.navigation.navigate('Events')
+                Firebase.database().ref('/users').push({
+                    email: values.email,
+                }, (error) => {
+                    props.navigation.navigate('Events')
+                })
             })
             .catch(error => {
                 isLoading(false);
